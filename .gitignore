@@ -1,4 +1,5 @@
 
-.DS_Store
-helloWorld/target/.history
-helloWorld/target/.history
+helloWorld/.DS_Store
+helloWorld/.idea/
+helloWorld/target/
+helloWorld/logs/
