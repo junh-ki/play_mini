@@ -23,23 +23,20 @@ import scala.jdk.CollectionConverters._
 
 object index extends _root_.play.twirl.api.BaseScalaTemplate[play.twirl.api.HtmlFormat.Appendable,_root_.play.twirl.api.Format[play.twirl.api.HtmlFormat.Appendable]](play.twirl.api.HtmlFormat) with _root_.play.twirl.api.Template2[String,AssetsFinder,play.twirl.api.HtmlFormat.Appendable] {
 
-  /*
-* This template takes a two arguments, a String containing a
-* message to display and an AssetsFinder to locate static assets.
-*/
-  def apply/*5.2*/(message: String)(implicit assetsFinder: AssetsFinder):play.twirl.api.HtmlFormat.Appendable = {
+  /* Param list */
+  def apply/*7.2*/(message: String)(implicit assetsFinder: AssetsFinder):play.twirl.api.HtmlFormat.Appendable = {
     _display_ {
       {
 
 
-Seq[Any](format.raw/*6.1*/("""
-"""),format.raw/*11.4*/("""
-"""),_display_(/*12.2*/main("Welcome to Play")/*12.25*/ {_display_(Seq[Any](format.raw/*12.27*/("""
+Seq[Any](format.raw/*8.1*/("""
+"""),format.raw/*13.4*/("""
+"""),_display_(/*14.2*/main("Welcome to Play")/*14.25*/ {_display_(Seq[Any](format.raw/*14.27*/("""
 
-    """),format.raw/*17.8*/("""
-    """),_display_(/*18.6*/welcome(message, style = "java")),format.raw/*18.38*/("""
+    """),format.raw/*19.8*/("""
+    """),_display_(/*20.6*/welcome(message, style = "java")),format.raw/*20.38*/("""
 
-""")))}),format.raw/*20.2*/("""
+""")))}),format.raw/*22.2*/("""
 """))
       }
     }
@@ -57,9 +54,9 @@ Seq[Any](format.raw/*6.1*/("""
               /*
                   -- GENERATED --
                   SOURCE: app/views/index.scala.html
-                  HASH: d0b4faccfa2c09baaa8f3b1b50ead40f7547b9ba
-                  MATRIX: 1048->134|1196->189|1224->384|1252->386|1284->409|1324->411|1357->540|1389->546|1442->578|1475->581
-                  LINES: 30->5|35->6|36->11|37->12|37->12|37->12|39->17|40->18|40->18|42->20
+                  HASH: 8b0dee9b3f43bbedec6b65bdbf625dcf591bf724
+                  MATRIX: 932->152|1080->207|1108->402|1136->404|1168->427|1208->429|1241->558|1273->564|1326->596|1359->599
+                  LINES: 27->7|32->8|33->13|34->14|34->14|34->14|36->19|37->20|37->20|39->22
                   -- GENERATED --
               */
           
