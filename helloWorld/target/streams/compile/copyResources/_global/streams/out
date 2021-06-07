@@ -1,0 +1,4 @@
+[0m[[0m[0mdebug[0m] [0m[0mCopy resource mappings: [0m
+[0m[[0m[0mdebug[0m] [0m[0m	(/Users/junhyungki/Desktop/Jun/play_mini/helloWorld/conf/logback.xml,/Users/junhyungki/Desktop/Jun/play_mini/helloWorld/target/scala-2.13/classes/logback.xml)[0m
+[0m[[0m[0mdebug[0m] [0m[0m	(/Users/junhyungki/Desktop/Jun/play_mini/helloWorld/conf/application.conf,/Users/junhyungki/Desktop/Jun/play_mini/helloWorld/target/scala-2.13/classes/application.conf)[0m
+[0m[[0m[0mdebug[0m] [0m[0m	(/Users/junhyungki/Desktop/Jun/play_mini/helloWorld/conf/routes,/Users/junhyungki/Desktop/Jun/play_mini/helloWorld/target/scala-2.13/classes/routes)[0m
