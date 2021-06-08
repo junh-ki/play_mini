@@ -1,0 +1,41 @@
+@*
+* This template takes a two arguments, a String containing a
+* message to display and an AssetsFinder to locate static assets.
+*@
+@(apartment: models.Apartment)(implicit assetsFinder: AssetsFinder)
+
+@main("Apartments") {
+    @* html content *@
+    <h1>The Apartment Page</h1>
+    <h2>Apartments go here</h2>
+
+    <div class="col-md-auto">
+        <!-- https://getbootstrap.com/docs/4.0/content/tables/ -->
+        <table class="table table-hover">
+            <thead>
+                <th scope="col">ID</th>
+                <th scope="col">Name</th>
+                <th scope="col">Category</th>
+                <th scope="col">Description</th>
+                <th scope="col">Size</th>
+                <th scope="col">Price</th>
+            </thead>
+            <tbody>
+                <tr scope="row">
+                    <td>@apartment.getId</td>
+                    <td>@apartment.getName</td>
+                    <td>@apartment.getCategory</td>
+                    <td>@apartment.getDescription</td>
+                    <td>@apartment.getSize</td>
+                    <td>&euro;@apartment.getPrice</td>
+                </tr>
+            </tbody>
+            <tfoot>
+                <tr scope="row">
+
+                </tr>
+            </tfoot>
+        </table>
+    </div>
+
+}
