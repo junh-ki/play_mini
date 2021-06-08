@@ -1,5 +1,7 @@
 .DS_Store
 helloWorld/.DS_Store
-helloWorld/.idea/
 helloWorld/target/
 helloWorld/logs/
+apartment/.DS_Store
+apartment/target/
+Apartment/logs/

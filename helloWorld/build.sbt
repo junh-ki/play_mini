@@ -1,5 +1,5 @@
 lazy val root = (project in file("."))
-  .enablePlugins(PlayJava)
+  .enablePlugins(PlayJava, PlayEbean)
   .settings(
     name := """play-java-starter-example""",
     version := "1.0-SNAPSHOT",
@@ -11,6 +11,10 @@ lazy val root = (project in file("."))
       // Testing libraries for dealing with CompletionStage...
       "org.assertj" % "assertj-core" % "3.14.0" % Test,
       "org.awaitility" % "awaitility" % "4.0.1" % Test,
+      evolutions,
+      javaJdbc,
+      // H2 Database
+
     ),
     javacOptions ++= Seq(
       "-encoding", "UTF-8",
