@@ -39,4 +39,10 @@ public class HomeController extends Controller {
         );
     }
 
+    public Result products() {
+        return ok(
+                products.render(assetsFinder)
+        );
+    }
+
 }
