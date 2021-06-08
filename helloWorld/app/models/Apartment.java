@@ -1,13 +1,31 @@
 package models;
 
+import io.ebean.Finder;
+import play.data.validation.Constraints;
+
+import javax.persistence.Entity;
+import javax.persistence.Id;
+
+@Entity
 public class Apartment {
 
     // properties
+    @Id
     private Long id;
+
+    @Constraints.Required
     private String name;
+
+    @Constraints.Required
     private String category;
+
+    @Constraints.Required
     private String description;
+
+    @Constraints.Min(10)
     private Integer size;
+
+    @Constraints.Min(5)
     private Double price;
 
     // Constructors
@@ -23,6 +41,8 @@ public class Apartment {
         this.size = size;
         this.price = price;
     }
+
+    public static Finder<Long, Apartment> find = new Finder<>(Apartment.class);
 
     public Long getId() {
         return id;
