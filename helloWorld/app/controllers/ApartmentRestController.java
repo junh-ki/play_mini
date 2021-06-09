@@ -6,9 +6,8 @@ import play.mvc.Controller;
 import play.mvc.Result;
 import services.ApartmentService;
 
-import javax.inject.Inject;
-import java.util.HashMap;
 import java.util.List;
+import javax.inject.Inject;
 
 public class ApartmentRestController extends Controller {
 
@@ -22,6 +21,11 @@ public class ApartmentRestController extends Controller {
     public Result getApartments() {
         List<Apartment> apartments = apartmentService.getAllApartments();
         return ok(Json.toJson(apartments));
+    }
+
+    public Result getApartment(Long id) {
+        Apartment apartment = apartmentService.findApartmentById(id);
+        return ok(Json.toJson(apartment));
     }
 
 }

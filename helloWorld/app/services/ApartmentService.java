@@ -21,8 +21,8 @@ public class ApartmentService {
         return null;
     }
 
-    public Apartment getApartmentById(Long apartmentId) {
-        return null;
+    public Apartment findApartmentById(Long apartmentId) {
+        return apartmentRepository.find.byId(apartmentId);
     }
 
     public List<Apartment> getAllApartments() {

@@ -9,6 +9,7 @@ GET     /apartments                 controllers.HomeController.apartments
 
 # REST
 GET     /rest/apartments            controllers.ApartmentRestController.getApartments()
+GET     /rest/apartments/:id        controllers.ApartmentRestController.getApartment(id:Long)
 
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file               controllers.Assets.versioned(file)
