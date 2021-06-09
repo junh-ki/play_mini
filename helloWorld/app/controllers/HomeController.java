@@ -3,6 +3,7 @@ package controllers;
 import models.Apartment;
 import play.mvc.*;
 
+import services.ApartmentService;
 import views.html.*;
 
 import javax.inject.Inject;
@@ -14,10 +15,12 @@ import java.util.List;
  */
 public class HomeController extends Controller {
 
+    private final ApartmentService apartmentService;
     private final AssetsFinder assetsFinder;
 
     @Inject
-    public HomeController(AssetsFinder assetsFinder) {
+    public HomeController(ApartmentService apartmentService, AssetsFinder assetsFinder) {
+        this.apartmentService = apartmentService;
         this.assetsFinder = assetsFinder;
     }
 
@@ -42,7 +45,7 @@ public class HomeController extends Controller {
     }
 
     public Result apartments() {
-        List<Apartment> apartmentList = Apartment.find.all();
+        List<Apartment> apartmentList = apartmentService.getAllApartments();
         return ok(apartments.render(apartmentList, assetsFinder));
     }
 

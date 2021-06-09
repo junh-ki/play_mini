@@ -5,6 +5,7 @@ import play.data.validation.Constraints;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.ManyToOne;
 
 @Entity
 public class Apartment {
@@ -41,10 +42,6 @@ public class Apartment {
         this.size = size;
         this.price = price;
     }
-
-    // Generic query helper
-    // for entity Apartment with id type Long
-    public static Finder<Long, Apartment> find = new Finder<>(Apartment.class);
 
     public Long getId() {
         return id;
