@@ -42,6 +42,8 @@ public class Apartment {
         this.price = price;
     }
 
+    // Generic query helper
+    // for entity Apartment with id type Long
     public static Finder<Long, Apartment> find = new Finder<>(Apartment.class);
 
     public Long getId() {
