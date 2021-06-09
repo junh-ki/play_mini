@@ -5,12 +5,10 @@
 # An example controller showing a sample home page
 GET     /                           controllers.HomeController.index
 GET     /about                      controllers.HomeController.about
-
-# CRUD
 GET     /apartments                 controllers.HomeController.apartments
 
-
-
+# REST
+GET     /rest/apartments            controllers.ApartmentRestController.getApartments()
 
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file               controllers.Assets.versioned(file)
