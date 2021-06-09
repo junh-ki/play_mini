@@ -1,5 +1,8 @@
 package services;
 
+import dto.ApartmentRequest;
+import io.ebean.Ebean;
+import io.ebean.EbeanServer;
 import models.Apartment;
 import repos.ApartmentRepository;
 
@@ -11,14 +14,12 @@ import java.util.List;
 public class ApartmentService {
 
     private final ApartmentRepository apartmentRepository;
+    private final EbeanServer server;
 
     @Inject
     public ApartmentService(ApartmentRepository apartmentRepository) {
         this.apartmentRepository = apartmentRepository;
-    }
-
-    public Apartment saveApartment(Apartment apartment) {
-        return null;
+        this.server = Ebean.getDefaultServer();
     }
 
     public Apartment findApartmentById(Long apartmentId) {
@@ -29,12 +30,27 @@ public class ApartmentService {
         return apartmentRepository.find.all();
     }
 
-    public List<Apartment> updateApartment(Apartment apartment) {
-        return null;
+    public Apartment saveApartment(ApartmentRequest apartmentRequest) {
+        Long nextId = (Long) Ebean.nextId(Apartment.class);
+        Apartment apartment = new Apartment();
+        apartment.setId(nextId);
+        apartment.setName(apartmentRequest.getName());
+        apartment.setCategory(apartmentRequest.getCategory());
+        apartment.setDescription(apartmentRequest.getDescription());
+        apartment.setSize(apartmentRequest.getSize());
+        apartment.setPrice(apartmentRequest.getPrice());
+        server.save(apartment);
+        return apartment;
     }
 
-    public void deleteApartment(Apartment apartment) {
+    public Apartment deleteApartmentById(Long apartmentId) {
+        Apartment apartment = Ebean.find(Apartment.class, apartmentId);
+        Ebean.delete(apartment);
+        return apartment;
+    }
 
+    public List<Apartment> updateApartment(Apartment apartment) {
+        return null;
     }
 
 }

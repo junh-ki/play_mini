@@ -1,53 +1,16 @@
-package models;
+package dto;
 
-import play.data.validation.Constraints;
+public class ApartmentRequest {
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
-
-@Entity
-public class Apartment {
-
-    // properties
-    @Id
-    private Long id;
-
-    @Constraints.Required
     private String name;
 
-    @Constraints.Required
     private String category;
 
-    @Constraints.Required
     private String description;
 
-    @Constraints.Min(10)
     private Integer size;
 
-    @Constraints.Min(5)
     private Double price;
-
-    // Constructors
-    public Apartment() {
-
-    }
-
-    public Apartment(Long id, String name, String category, String description, Integer size, Double price) {
-        this.id = id;
-        this.name = name;
-        this.category = category;
-        this.description = description;
-        this.size = size;
-        this.price = price;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
 
     public String getName() {
         return name;

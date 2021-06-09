@@ -1,5 +1,6 @@
 package controllers;
 
+import dto.ApartmentRequest;
 import models.Apartment;
 import play.libs.Json;
 import play.mvc.Controller;
@@ -25,6 +26,16 @@ public class ApartmentRestController extends Controller {
 
     public Result getApartment(Long id) {
         Apartment apartment = apartmentService.findApartmentById(id);
+        return ok(Json.toJson(apartment));
+    }
+
+    public Result saveApartment(ApartmentRequest request) {
+        Apartment apartment = apartmentService.saveApartment(request);
+        return ok(Json.toJson(apartment));
+    }
+
+    public Result deleteApartmentById(Long id) {
+        Apartment apartment = apartmentService.deleteApartmentById(id);
         return ok(Json.toJson(apartment));
     }
 
