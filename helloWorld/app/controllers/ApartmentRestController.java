@@ -40,4 +40,11 @@ public class ApartmentRestController extends Controller {
         return ok(Json.toJson(apartment));
     }
 
+    public Result updateApartmentPrice(Long id, Double price) {
+        Apartment apartment = apartmentService.findApartmentById(id);
+        apartment.setPrice(price);
+        Apartment updatedApartment = apartmentService.updateApartment(apartment);
+        return ok(Json.toJson(updatedApartment));
+    }
+
 }

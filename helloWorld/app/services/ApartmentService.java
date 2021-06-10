@@ -44,8 +44,9 @@ public class ApartmentService {
         return apartment;
     }
 
-    public List<Apartment> updateApartment(Apartment apartment) {
-        return null;
+    public Apartment updateApartment(Apartment apartment) {
+        server.save(apartment);
+        return apartment;
     }
 
 }

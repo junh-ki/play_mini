@@ -12,7 +12,7 @@ GET     /rest/apartments                                                      co
 GET     /rest/apartments/:id                                                  controllers.ApartmentRestController.getApartment(id:Long)
 POST    /rest/apartments/:name/:category/:description/:size/:price            controllers.ApartmentRestController.addApartment(name:String,category:String,description:String,size:Integer,price:Double)
 DELETE  /rest/apartments/:id                                                  controllers.ApartmentRestController.deleteApartmentById(id:Long)
-#PUT update?
+PUT     /rest/apartments/:id/:price                                           controllers.ApartmentRestController.updateApartmentPrice(id:Long,price:Double)
 
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file               controllers.Assets.versioned(file)
