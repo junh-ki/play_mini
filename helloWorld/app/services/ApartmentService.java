@@ -14,12 +14,10 @@ import java.util.List;
 public class ApartmentService {
 
     private final ApartmentRepository apartmentRepository;
-    private final EbeanServer server;
 
     @Inject
     public ApartmentService(ApartmentRepository apartmentRepository) {
         this.apartmentRepository = apartmentRepository;
-        this.server = Ebean.getDefaultServer();
     }
 
     public Apartment findApartmentById(Long apartmentId) {
@@ -31,22 +29,15 @@ public class ApartmentService {
     }
 
     public Apartment saveApartment(ApartmentRequest apartmentRequest) {
-        Long nextId = (Long) Ebean.nextId(Apartment.class);
-        Apartment apartment = new Apartment(nextId, apartmentRequest.getName(), apartmentRequest.getCategory(),
-                apartmentRequest.getDescription(), apartmentRequest.getSize(), apartmentRequest.getPrice());
-        server.save(apartment);
-        return apartment;
+        return apartmentRepository.addApartment(apartmentRequest);
     }
 
     public Apartment deleteApartmentById(Long apartmentId) {
-        Apartment apartment = Ebean.find(Apartment.class, apartmentId);
-        Ebean.delete(apartment);
-        return apartment;
+        return apartmentRepository.deleteApartmentById(apartmentId);
     }
 
     public Apartment updateApartment(Apartment apartment) {
-        server.save(apartment);
-        return apartment;
+        return apartmentRepository.updateApartment(apartment);
     }
 
 }
