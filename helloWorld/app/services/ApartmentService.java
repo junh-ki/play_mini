@@ -32,13 +32,8 @@ public class ApartmentService {
 
     public Apartment saveApartment(ApartmentRequest apartmentRequest) {
         Long nextId = (Long) Ebean.nextId(Apartment.class);
-        Apartment apartment = new Apartment();
-        apartment.setId(nextId);
-        apartment.setName(apartmentRequest.getName());
-        apartment.setCategory(apartmentRequest.getCategory());
-        apartment.setDescription(apartmentRequest.getDescription());
-        apartment.setSize(apartmentRequest.getSize());
-        apartment.setPrice(apartmentRequest.getPrice());
+        Apartment apartment = new Apartment(nextId, apartmentRequest.getName(), apartmentRequest.getCategory(),
+                apartmentRequest.getDescription(), apartmentRequest.getSize(), apartmentRequest.getPrice());
         server.save(apartment);
         return apartment;
     }

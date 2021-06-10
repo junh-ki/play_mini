@@ -29,7 +29,8 @@ public class ApartmentRestController extends Controller {
         return ok(Json.toJson(apartment));
     }
 
-    public Result saveApartment(ApartmentRequest request) {
+    public Result addApartment(String name, String category, String description, Integer size, Double price) {
+        ApartmentRequest request = new ApartmentRequest(name, category, description, size, price);
         Apartment apartment = apartmentService.saveApartment(request);
         return ok(Json.toJson(apartment));
     }

@@ -12,6 +12,17 @@ public class ApartmentRequest {
 
     private Double price;
 
+    public ApartmentRequest() {
+    }
+
+    public ApartmentRequest(String name, String category, String description, Integer size, Double price) {
+        this.name = name;
+        this.category = category;
+        this.description = description;
+        this.size = size;
+        this.price = price;
+    }
+
     public String getName() {
         return name;
     }
