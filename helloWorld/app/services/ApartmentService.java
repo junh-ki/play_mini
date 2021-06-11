@@ -1,8 +1,6 @@
 package services;
 
 import dto.ApartmentRequest;
-import io.ebean.Ebean;
-import io.ebean.EbeanServer;
 import models.Apartment;
 import repos.ApartmentRepository;
 
@@ -21,11 +19,11 @@ public class ApartmentService {
     }
 
     public Apartment findApartmentById(Long apartmentId) {
-        return apartmentRepository.find.byId(apartmentId);
+        return apartmentRepository.findApartmentById(apartmentId);
     }
 
     public List<Apartment> getAllApartments() {
-        return apartmentRepository.find.all();
+        return apartmentRepository.getAllApartments();
     }
 
     public Apartment saveApartment(ApartmentRequest apartmentRequest) {
