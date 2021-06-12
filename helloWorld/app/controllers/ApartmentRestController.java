@@ -7,8 +7,8 @@ import play.mvc.Controller;
 import play.mvc.Result;
 import services.ApartmentService;
 
-import java.util.List;
 import javax.inject.Inject;
+import java.util.List;
 
 public class ApartmentRestController extends Controller {
 
@@ -27,20 +27,13 @@ public class ApartmentRestController extends Controller {
 
     public Result getApartment(Long id) {
         Apartment apartment = apartmentService.findApartmentById(id);
-        if (apartment == null) return badRequest("ID doesn't exist."); // TODO: change the return status (400)
+        if (apartment == null) return notFound("ID doesn't exist."); // 404
         return ok(Json.toJson(apartment));
     }
 
     public Result addApartment(String name, String category, String description, Integer size, Double price) {
-        System.out.println("Category: " + category);
-        // TODO: separate method for validation
-        if (!category.equals("A") && !category.equals("B") && !category.equals("C")) {
-            return badRequest("Category should either be \"A\" or \"B\" or \"C\"!");
-        } else if (size < 10) {
-            return badRequest("Size should not be smaller than 10!");
-        } else if (price < 5) {
-            return badRequest("Price should not be smaller than 5!");
-        }
+        Result validateResult = validateApartmentRequest(category, size, price);
+        if (validateResult != null) return validateResult;
         ApartmentRequest request = new ApartmentRequest(name, category, description, size, price);
         Apartment apartment = apartmentService.saveApartment(request);
         return ok(Json.toJson(apartment));
@@ -48,7 +41,7 @@ public class ApartmentRestController extends Controller {
 
     public Result deleteApartmentById(Long id) {
         Apartment apartment = apartmentService.deleteApartmentById(id);
-        if (apartment == null) return badRequest("ID doesn't exist."); // change the return status (400)
+        if (apartment == null) return notFound("ID doesn't exist."); // 404
         return ok(Json.toJson(apartment));
     }
 
@@ -64,6 +57,17 @@ public class ApartmentRestController extends Controller {
         // TODO: use Optional
 
         return ok(Json.toJson(updatedApartment));
+    }
+
+    public Result validateApartmentRequest(String category, Integer size, Double price) {
+        if (!category.equals("A") && !category.equals("B") && !category.equals("C")) {
+            return badRequest("Category should either be \"A\" or \"B\" or \"C\"!");
+        } else if (size < 10) {
+            return badRequest("Size should not be smaller than 10!");
+        } else if (price < 5) {
+            return badRequest("Price should not be smaller than 5!");
+        }
+        return null;
     }
 
 }
