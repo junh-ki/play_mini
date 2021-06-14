@@ -24,6 +24,9 @@ public class ApartmentRestController extends Controller {
 
     public Result getApartments(Integer page, Integer size) {
         List<Apartment> apartments = apartmentService.getAllApartments();
+        if (isOutOfIndex(page, size, apartments.size())) {
+            return badRequest("Out of index! (Last Index: " + (apartments.size()-1) + ")");
+        }
         List<Apartment> paginatedApartmentList = getPaginatedApartmentList(page, size, apartments);
         return ok(Json.toJson(paginatedApartmentList));
     }
@@ -132,6 +135,14 @@ public class ApartmentRestController extends Controller {
             if (price < 5) return badRequest("Price should not be smaller than 5!");
         }
         return null;
+    }
+
+    public boolean isOutOfIndex(Integer page, Integer size, Integer length) {
+        int startIndex = 0;
+        if (page > 1) startIndex = startIndex + (page - 1) * size;
+        int lastIndex = startIndex + size;
+        if (lastIndex > length) return true;
+        return false;
     }
 
     public List<Apartment> getPaginatedApartmentList(Integer page, Integer size, List<Apartment> apartments) {
