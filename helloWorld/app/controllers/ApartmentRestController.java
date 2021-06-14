@@ -10,6 +10,7 @@ import play.mvc.Result;
 import services.ApartmentService;
 
 import javax.inject.Inject;
+import java.util.ArrayList;
 import java.util.List;
 
 public class ApartmentRestController extends Controller {
@@ -21,10 +22,10 @@ public class ApartmentRestController extends Controller {
         this.apartmentService = apartmentService;
     }
 
-    public Result getApartments() {
-        // TODO: current page , page size | page-pagination
+    public Result getApartments(Integer page, Integer size) {
         List<Apartment> apartments = apartmentService.getAllApartments();
-        return ok(Json.toJson(apartments));
+        List<Apartment> paginatedApartmentList = getPaginatedApartmentList(page, size, apartments);
+        return ok(Json.toJson(paginatedApartmentList));
     }
 
     public Result getApartment(Long id) {
@@ -53,10 +54,11 @@ public class ApartmentRestController extends Controller {
         Result apartmentUpdateRequestValidationResult = validateApartmentUpdateRequest(request);
         if (apartmentUpdateRequestValidationResult != null) return apartmentUpdateRequestValidationResult;
         Apartment apartment = jsonRequestToApartment(request);
-        System.out.println("***** DEBUG: " + "\n" + apartment);
         Apartment updatedApartment = apartmentService.updateApartment(apartment);
         return ok(Json.toJson(updatedApartment));
     }
+
+    // *** sub methods ***
 
     public Result validateJsonRequest(Http.Request request) {
         JsonNode requestJson = request.body().asJson();
@@ -130,6 +132,17 @@ public class ApartmentRestController extends Controller {
             if (price < 5) return badRequest("Price should not be smaller than 5!");
         }
         return null;
+    }
+
+    public List<Apartment> getPaginatedApartmentList(Integer page, Integer size, List<Apartment> apartments) {
+        int startIndex = 0;
+        if (page > 1) startIndex = startIndex + (page - 1) * size;
+        List<Apartment> paginatedApartmentList = new ArrayList<Apartment>();
+        for (int i = startIndex; i < startIndex + size; i++) {
+            Apartment app = apartments.get(i);
+            paginatedApartmentList.add(app);
+        }
+        return paginatedApartmentList;
     }
 
 }

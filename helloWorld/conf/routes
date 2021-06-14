@@ -8,8 +8,8 @@ GET     /about                                                                co
 GET     /apartments                                                           controllers.HomeController.apartments
 
 # REST
-GET     /rest/apartments                                                      controllers.ApartmentRestController.getApartments()
-GET     /rest/apartments/                                                     controllers.ApartmentRestController.getApartments()
+GET     /rest/apartments                                                      controllers.ApartmentRestController.getApartments(page:Integer ?= 1, size:Integer ?= 10)
+GET     /rest/apartments/                                                     controllers.ApartmentRestController.getApartments(page:Integer ?= 1, size:Integer ?= 10)
 GET     /rest/apartments/:id                                                  controllers.ApartmentRestController.getApartment(id:Long)
 POST    /rest/apartments                                                      controllers.ApartmentRestController.addApartment(request:Request)
 POST    /rest/apartments/                                                     controllers.ApartmentRestController.addApartment(request:Request)
