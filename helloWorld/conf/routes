@@ -9,10 +9,13 @@ GET     /apartments                                                           co
 
 # REST
 GET     /rest/apartments                                                      controllers.ApartmentRestController.getApartments()
+GET     /rest/apartments/                                                     controllers.ApartmentRestController.getApartments()
 GET     /rest/apartments/:id                                                  controllers.ApartmentRestController.getApartment(id:Long)
-POST    /rest/apartments/:name/:category/:description/:size/:price            controllers.ApartmentRestController.addApartment(name:String,category:String,description:String,size:Integer,price:Double)
+POST    /rest/apartments                                                      controllers.ApartmentRestController.addApartment(request:Request)
+POST    /rest/apartments/                                                     controllers.ApartmentRestController.addApartment(request:Request)
 DELETE  /rest/apartments/:id                                                  controllers.ApartmentRestController.deleteApartmentById(id:Long)
-PUT     /rest/apartments/:id/:price                                           controllers.ApartmentRestController.updateApartmentPrice(id:Long,price:Double)
+PUT     /rest/apartments                                                      controllers.ApartmentRestController.updateApartment(request:Request)
+PUT     /rest/apartments/                                                     controllers.ApartmentRestController.updateApartment(request:Request)
 
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file               controllers.Assets.versioned(file)

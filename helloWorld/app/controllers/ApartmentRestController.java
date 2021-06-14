@@ -1,5 +1,6 @@
 package controllers;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import dto.ApartmentRequest;
 import models.Apartment;
 import play.libs.Json;
@@ -33,10 +34,12 @@ public class ApartmentRestController extends Controller {
     }
 
     public Result addApartment(Http.Request request) {
-        Apartment requestedApartment = request.body().as(Apartment.class);
-        Result validateResult = validateApartmentRequest(requestedApartment);
-        if (validateResult != null) return validateResult;
-        Apartment apartment = requestApartment(requestedApartment);
+        Result jsonValidationResult = validateJsonRequest(request);
+        if (jsonValidationResult != null) return jsonValidationResult;
+        ApartmentRequest requestedApartment = jsonRequestToApartmentRequest(request);
+        Result requestValidationResult = validateApartmentRequest(requestedApartment);
+        if (requestValidationResult != null) return requestValidationResult;
+        Apartment apartment = apartmentService.saveApartment(requestedApartment);
         return ok(Json.toJson(apartment));
     }
 
@@ -47,17 +50,57 @@ public class ApartmentRestController extends Controller {
     }
 
     public Result updateApartment(Http.Request request) {
-        Apartment requestedApartment = request.body().as(Apartment.class);
-        Result validateResult = validateApartmentUpdate(requestedApartment);
-        if (validateResult != null) return validateResult;
-        Apartment updatedApartment = apartmentService.updateApartment(requestedApartment);
+        Result apartmentUpdateRequestValidationResult = validateApartmentUpdateRequest(request);
+        if (apartmentUpdateRequestValidationResult != null) return apartmentUpdateRequestValidationResult;
+        Apartment apartment = jsonRequestToApartment(request);
+        System.out.println("***** DEBUG: " + "\n" + apartment);
+        Apartment updatedApartment = apartmentService.updateApartment(apartment);
         return ok(Json.toJson(updatedApartment));
     }
 
-    public Result validateApartmentRequest(Apartment apartment) {
-        String category = apartment.getCategory();
-        Integer size = apartment.getSize();
-        Double price = apartment.getPrice();
+    public Result validateJsonRequest(Http.Request request) {
+        JsonNode requestJson = request.body().asJson();
+        if (!requestJson.has("name")) {
+            return badRequest("Name should be given!");
+        } else if (!requestJson.has("category")) {
+            return badRequest("Category should be given!");
+        } else if (!requestJson.has("description")) {
+            return badRequest("Description should be given!");
+        } else if (!requestJson.has("size")) {
+            return badRequest("Size should be given!");
+        } else if (!requestJson.has("price")) {
+            return badRequest("Price should be given!");
+        }
+        return null;
+    }
+
+    public ApartmentRequest jsonRequestToApartmentRequest(Http.Request request) {
+        JsonNode requestJson = request.body().asJson();
+        String name = requestJson.findValue("name").asText();
+        String category = requestJson.findValue("category").asText();
+        String description = requestJson.findValue("description").asText();
+        Integer size = requestJson.findValue("size").asInt();
+        Double price = requestJson.findValue("price").asDouble();
+        ApartmentRequest apartmentRequest = new ApartmentRequest(name, category, description, size, price);
+        return apartmentRequest;
+    }
+
+    public Apartment jsonRequestToApartment(Http.Request request) {
+        Apartment apartment = new Apartment();
+        JsonNode requestJson = request.body().asJson();
+        apartment.setId(requestJson.findValue("id").asLong());
+        if (requestJson.has("name")) apartment.setName(requestJson.findValue("name").asText());
+        if (requestJson.has("category")) apartment.setCategory(requestJson.findValue("category").asText());
+        if (requestJson.has("description")) apartment.setDescription(requestJson.findValue("description").asText());
+        if (requestJson.has("size")) apartment.setSize(requestJson.findValue("size").asInt());
+        if (requestJson.has("price")) apartment.setPrice(requestJson.findValue("price").asDouble());
+        return apartment;
+    }
+
+    public Result validateApartmentRequest(ApartmentRequest apartmentRequest) {
+        String category = apartmentRequest.getCategory();
+        Integer size = apartmentRequest.getSize();
+        Double price = apartmentRequest.getPrice();
         if (category == null || !category.equals("A") && !category.equals("B") && !category.equals("C")) {
             return badRequest("Category should either be \"A\" or \"B\" or \"C\"!");
         } else if (size == null || size < 10) {
@@ -68,15 +111,25 @@ public class ApartmentRestController extends Controller {
         return null;
     }
 
-    public Result validateApartmentUpdate(Apartment requestedApartment) {
-        if (requestedApartment.getId() == null) return badRequest("ID must be given!");
-        return validateApartmentRequest(requestedApartment);
-    }
-
-    public Apartment requestApartment(Apartment requestedApartment) {
-        ApartmentRequest request = new ApartmentRequest(requestedApartment.getName(), requestedApartment.getCategory(),
-                requestedApartment.getDescription(), requestedApartment.getSize(), requestedApartment.getPrice());
-        return apartmentService.saveApartment(request);
+    public Result validateApartmentUpdateRequest(Http.Request request) {
+        JsonNode requestJson = request.body().asJson();
+        if (!requestJson.has("id")) return badRequest("ID must be given!");
+        if (apartmentService.findApartmentById(requestJson.findValue("id").asLong()) == null) {
+            return notFound("ID doesn't exist.");
+        }
+        if (requestJson.has("category")) {
+            String category = requestJson.findValue("category").asText();
+            if (!category.equals("A") && !category.equals("B") && !category.equals("C")) {
+                return badRequest("Category should either be \"A\" or \"B\" or \"C\"!");
+            }
+        } else if (requestJson.has("size")) {
+            Integer size = requestJson.findValue("size").asInt();
+            if (size < 10) return badRequest("Size should not be smaller than 10!");
+        } else if (requestJson.has("price")) {
+            Double price = requestJson.findValue("price").asDouble();
+            if (price < 5) return badRequest("Price should not be smaller than 5!");
+        }
+        return null;
     }
 
 }

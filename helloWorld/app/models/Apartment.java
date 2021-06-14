@@ -8,7 +8,6 @@ import javax.persistence.Id;
 @Entity
 public class Apartment {
 
-    // properties
     @Id
     private Long id;
 
@@ -87,6 +86,18 @@ public class Apartment {
 
     public void setPrice(Double price) {
         this.price = price;
+    }
+
+    @Override
+    public String toString() {
+        return "Apartment{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", category='" + category + '\'' +
+                ", description='" + description + '\'' +
+                ", size=" + size +
+                ", price=" + price +
+                '}';
     }
 
 }

@@ -48,7 +48,7 @@ public class ApartmentRepository {
     }
 
     public Apartment updateApartment(Apartment apartment) {
-        server.save(apartment);
+        server.update(apartment);
         return apartment;
     }
 
