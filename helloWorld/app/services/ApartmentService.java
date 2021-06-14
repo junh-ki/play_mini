@@ -13,7 +13,7 @@ public class ApartmentService {
 
     private final ApartmentRepository apartmentRepository;
 
-    private final List<Apartment> apartments;
+    private final List<Apartment> apartments; // TODO: we don't want to use in-memory cache , Map is better in fact
 
     @Inject
     public ApartmentService(ApartmentRepository apartmentRepository) {
@@ -21,7 +21,7 @@ public class ApartmentService {
         this.apartments = apartmentRepository.getAllApartments();
     }
 
-    public Apartment findApartmentById(Long apartmentId) {
+    public Apartment findApartmentById(Long apartmentId) { // TODO: Return Optional // TODO: SQL query Ebean.
         Apartment apartment = apartments.stream().filter(a -> a.getId().longValue() == apartmentId.longValue())
                 .iterator().next();
         return apartment;

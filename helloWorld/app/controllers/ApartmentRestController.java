@@ -38,6 +38,8 @@ public class ApartmentRestController extends Controller {
     }
 
     public Result addApartment(Http.Request request) {
+        // TODO: 201 created
+        // TODO: validate only once
         Result jsonValidationResult = validateJsonRequest(request);
         if (jsonValidationResult != null) return jsonValidationResult;
         ApartmentRequest requestedApartment = jsonRequestToApartmentRequest(request);
@@ -49,17 +51,22 @@ public class ApartmentRestController extends Controller {
 
     public Result deleteApartmentById(Long id) {
         Apartment apartment = apartmentService.deleteApartmentById(id);
-        if (apartment == null) return notFound("ID doesn't exist."); // 404
+        if (apartment == null) return notFound("ID doesn't exist."); // TODO: return ok or not found / I dont need to return the deleted obj.
         return ok(Json.toJson(apartment));
     }
 
     public Result updateApartment(Http.Request request) {
+        // TODO: error dto,
         Result apartmentUpdateRequestValidationResult = validateApartmentUpdateRequest(request);
         if (apartmentUpdateRequestValidationResult != null) return apartmentUpdateRequestValidationResult;
         Apartment apartment = jsonRequestToApartment(request);
         Apartment updatedApartment = apartmentService.updateApartment(apartment);
         return ok(Json.toJson(updatedApartment));
     }
+
+
+
+
 
     // *** sub methods ***
 
@@ -91,6 +98,9 @@ public class ApartmentRestController extends Controller {
     }
 
     public Apartment jsonRequestToApartment(Http.Request request) {
+
+        // TODO: In the service layer, we can retreive the apartment by Id, and you update the obj according to json and pass it back to the repository.
+
         Apartment apartment = new Apartment();
         JsonNode requestJson = request.body().asJson();
         apartment.setId(requestJson.findValue("id").asLong());
@@ -117,6 +127,10 @@ public class ApartmentRestController extends Controller {
     }
 
     public Result validateApartmentUpdateRequest(Http.Request request) {
+        // TODO: pass a different type (bad request)
+        // TODO: return Optional instead of null
+        // TODO: return JSON return object
+        // TODO: Or See the play framework validation doc // annotation on your request.
         JsonNode requestJson = request.body().asJson();
         if (!requestJson.has("id")) return badRequest("ID must be given!");
         if (apartmentService.findApartmentById(requestJson.findValue("id").asLong()) == null) {
@@ -127,10 +141,12 @@ public class ApartmentRestController extends Controller {
             if (!category.equals("A") && !category.equals("B") && !category.equals("C")) {
                 return badRequest("Category should either be \"A\" or \"B\" or \"C\"!");
             }
-        } else if (requestJson.has("size")) {
+        }
+        if (requestJson.has("size")) {
             Integer size = requestJson.findValue("size").asInt();
             if (size < 10) return badRequest("Size should not be smaller than 10!");
-        } else if (requestJson.has("price")) {
+        }
+        if (requestJson.has("price")) {
             Double price = requestJson.findValue("price").asDouble();
             if (price < 5) return badRequest("Price should not be smaller than 5!");
         }
@@ -146,6 +162,7 @@ public class ApartmentRestController extends Controller {
     }
 
     public List<Apartment> getPaginatedApartmentList(Integer page, Integer size, List<Apartment> apartments) {
+        // TODO: SQL QUERY (Ebean) don't use cache, you can return an empty list. or you can return a bad request (400.. 404 or something)
         int startIndex = 0;
         if (page > 1) startIndex = startIndex + (page - 1) * size;
         List<Apartment> paginatedApartmentList = new ArrayList<Apartment>();

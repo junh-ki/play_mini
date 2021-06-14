@@ -42,8 +42,11 @@ public class ApartmentRepository {
     }
 
     public Apartment deleteApartmentById(Long apartmentId) {
+        // TODO: use server.delete()
         Apartment apartment = finder.byId(apartmentId);
         if (apartment != null) Ebean.delete(apartment);
+        // TODO: int result = server.delete(Apartment.class, apartmentId);
+        // TODO: number of rows affected 0: apartment wasn't found. provided apartmentId was wrong / 1: apartment deleted / >1: multiple apartment has the same id (we are doing auto-increment)
         return apartment;
     }
 
