@@ -1,64 +1,70 @@
 package services;
 
-import dto.ApartmentRequest;
+import com.fasterxml.jackson.databind.JsonNode;
 import models.Apartment;
+import play.libs.Json;
+import play.mvc.Http;
+import play.mvc.Result;
 import repos.ApartmentRepository;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.util.List;
+import java.util.Optional;
+
+import static play.mvc.Results.*;
 
 @Singleton
 public class ApartmentService {
 
     private final ApartmentRepository apartmentRepository;
 
-    private final List<Apartment> apartments; // TODO: we don't want to use in-memory cache , Map is better in fact
-
     @Inject
     public ApartmentService(ApartmentRepository apartmentRepository) {
         this.apartmentRepository = apartmentRepository;
-        this.apartments = apartmentRepository.getAllApartments();
     }
 
-    public Apartment findApartmentById(Long apartmentId) { // TODO: Return Optional // TODO: SQL query Ebean.
-        Apartment apartment = apartments.stream().filter(a -> a.getId().longValue() == apartmentId.longValue())
-                .iterator().next();
-        return apartment;
+    public Optional<Apartment> findApartmentById(Long apartmentId) {
+        Apartment apartment = apartmentRepository.findApartmentById(apartmentId);
+        return Optional.ofNullable(apartment);
     }
 
+    // TODO: SQL query Ebean.
     public List<Apartment> getAllApartments() {
-        return apartments;
+        return apartmentRepository.getAllApartments();
     }
 
-    public Apartment saveApartment(ApartmentRequest apartmentRequest) {
-        Apartment apartment = apartmentRepository.addApartment(apartmentRequest);
-        apartments.add(apartment);
+    public Apartment addApartment(Apartment apartment) {
+        Apartment addedApartment = apartmentRepository.addApartment(apartment);
+        return addedApartment;
+    }
+
+    public Result deleteApartmentById(Long apartmentId) {
+        int deleteResult = apartmentRepository.deleteApartmentById(apartmentId);
+        if (deleteResult == 0) {
+            return notFound(Json.toJson("ID doesn't exist!"));
+        } else if (deleteResult == 1) {
+            return ok(Json.toJson("Successfully deleted!"));
+        }
+        return internalServerError(Json.toJson("Identical ID exists!"));
+    }
+
+    public Apartment updateApartment(Http.Request request) {
+        JsonNode jsonRequest = request.body().asJson();
+        Apartment foundApartment = apartmentRepository.findApartmentById(jsonRequest.findValue("id").asLong());
+        Apartment updatedApartment = updateApartmentObjWithJson(foundApartment, jsonRequest);
+        apartmentRepository.updateApartment(updatedApartment);
+        return updatedApartment;
+    }
+
+    public Apartment updateApartmentObjWithJson(Apartment apartment, JsonNode jsonRequest) {
+        if (jsonRequest.has("id")) apartment.setId(jsonRequest.findValue("id").asLong());
+        if (jsonRequest.has("name")) apartment.setName(jsonRequest.findValue("name").asText());
+        if (jsonRequest.has("category")) apartment.setCategory(jsonRequest.findValue("category").asText());
+        if (jsonRequest.has("description")) apartment.setDescription(jsonRequest.findValue("description").asText());
+        if (jsonRequest.has("size")) apartment.setSize(jsonRequest.findValue("size").asInt());
+        if (jsonRequest.has("price")) apartment.setPrice(jsonRequest.findValue("price").asDouble());
         return apartment;
-    }
-
-    public Apartment deleteApartmentById(Long apartmentId) {
-        Apartment apartmentToDelete = apartmentRepository.deleteApartmentById(apartmentId);
-        Apartment deletedApartment = apartments.stream().filter(a -> a.getId().longValue() == apartmentToDelete.getId().longValue())
-                .iterator().next();
-        apartments.remove(deletedApartment);
-        return apartmentToDelete;
-    }
-
-    public Apartment updateApartment(Apartment apartment) {
-        Apartment apartmentToUpdate = apartmentRepository.updateApartment(apartment);
-        Apartment updatedApartment = apartments.stream().filter(a -> a.getId().longValue() == apartmentToUpdate.getId().longValue())
-                .iterator().next();
-        return updateApp(apartmentToUpdate, updatedApartment);
-    }
-
-    private Apartment updateApp(Apartment prev, Apartment updated) {
-        prev.setName(updated.getName());
-        prev.setCategory(updated.getCategory());
-        prev.setDescription(updated.getDescription());
-        prev.setSize(updated.getSize());
-        prev.setPrice(updated.getPrice());
-        return prev;
     }
 
 }

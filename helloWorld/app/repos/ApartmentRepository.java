@@ -1,6 +1,5 @@
 package repos;
 
-import dto.ApartmentRequest;
 import io.ebean.Ebean;
 import io.ebean.EbeanServer;
 import io.ebean.Finder;
@@ -22,32 +21,22 @@ public class ApartmentRepository {
     }
 
     public Apartment findApartmentById(Long apartmentId) {
-        return finder.byId(apartmentId);
+        return server.find(Apartment.class, apartmentId);
     }
 
     public List<Apartment> getAllApartments() {
-        List<Apartment> apartments = finder.all();
-        return apartments;
+        return finder.all();
     }
 
-    public Apartment addApartment(ApartmentRequest apartmentRequest) {
-        Apartment apartment = new Apartment();
-        apartment.setName(apartmentRequest.getName());
-        apartment.setCategory(apartmentRequest.getCategory());
-        apartment.setDescription(apartmentRequest.getDescription());
-        apartment.setSize(apartmentRequest.getSize());
-        apartment.setPrice(apartmentRequest.getPrice());
+    public Apartment addApartment(Apartment apartment) {
+        Long nextId = (Long) server.nextId(Apartment.class);
         server.save(apartment);
-        return apartment;
+        return server.find(Apartment.class, nextId);
     }
 
-    public Apartment deleteApartmentById(Long apartmentId) {
-        // TODO: use server.delete()
-        Apartment apartment = finder.byId(apartmentId);
-        if (apartment != null) Ebean.delete(apartment);
-        // TODO: int result = server.delete(Apartment.class, apartmentId);
-        // TODO: number of rows affected 0: apartment wasn't found. provided apartmentId was wrong / 1: apartment deleted / >1: multiple apartment has the same id (we are doing auto-increment)
-        return apartment;
+    public int deleteApartmentById(Long apartmentId) {
+        int deleteResult = server.delete(Apartment.class, apartmentId);
+        return deleteResult;
     }
 
     public Apartment updateApartment(Apartment apartment) {

@@ -1,7 +1,6 @@
 package controllers;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import dto.ApartmentRequest;
 import models.Apartment;
 import play.libs.Json;
 import play.mvc.Controller;
@@ -12,6 +11,7 @@ import services.ApartmentService;
 import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 public class ApartmentRestController extends Controller {
 
@@ -32,125 +32,93 @@ public class ApartmentRestController extends Controller {
     }
 
     public Result getApartment(Long id) {
-        Apartment apartment = apartmentService.findApartmentById(id);
-        if (apartment == null) return notFound("ID doesn't exist."); // 404
-        return ok(Json.toJson(apartment));
+        Optional<Apartment> nullableApartment = apartmentService.findApartmentById(id);
+        if (nullableApartment.isEmpty()) return notFound("ID doesn't exist."); // 404
+        return ok(Json.toJson(nullableApartment.get()));
     }
 
     public Result addApartment(Http.Request request) {
-        // TODO: 201 created
-        // TODO: validate only once
-        Result jsonValidationResult = validateJsonRequest(request);
-        if (jsonValidationResult != null) return jsonValidationResult;
-        ApartmentRequest requestedApartment = jsonRequestToApartmentRequest(request);
-        Result requestValidationResult = validateApartmentRequest(requestedApartment);
-        if (requestValidationResult != null) return requestValidationResult;
-        Apartment apartment = apartmentService.saveApartment(requestedApartment);
-        return ok(Json.toJson(apartment));
+        Result validationResult = validateHttpRequestForAddApartment(request);
+        if (validationResult.status() != 200) return validationResult;
+        Apartment requestedApartment = httpRequestToApartment(request);
+        Apartment addedApartment = apartmentService.addApartment(requestedApartment);
+        return created(Json.toJson(addedApartment)); // 201
     }
 
     public Result deleteApartmentById(Long id) {
-        Apartment apartment = apartmentService.deleteApartmentById(id);
-        if (apartment == null) return notFound("ID doesn't exist."); // TODO: return ok or not found / I dont need to return the deleted obj.
-        return ok(Json.toJson(apartment));
+        return apartmentService.deleteApartmentById(id);
     }
 
     public Result updateApartment(Http.Request request) {
-        // TODO: error dto,
-        Result apartmentUpdateRequestValidationResult = validateApartmentUpdateRequest(request);
-        if (apartmentUpdateRequestValidationResult != null) return apartmentUpdateRequestValidationResult;
-        Apartment apartment = jsonRequestToApartment(request);
-        Apartment updatedApartment = apartmentService.updateApartment(apartment);
+        Result validationResult = validateHttpRequestForUpdateApartment(request);
+        if (validationResult.status() != 200) return validationResult;
+        Apartment updatedApartment = apartmentService.updateApartment(request);
         return ok(Json.toJson(updatedApartment));
     }
 
-
-
-
-
     // *** sub methods ***
 
-    public Result validateJsonRequest(Http.Request request) {
-        JsonNode requestJson = request.body().asJson();
-        if (!requestJson.has("name")) {
-            return badRequest("Name should be given!");
-        } else if (!requestJson.has("category")) {
-            return badRequest("Category should be given!");
-        } else if (!requestJson.has("description")) {
-            return badRequest("Description should be given!");
-        } else if (!requestJson.has("size")) {
-            return badRequest("Size should be given!");
-        } else if (!requestJson.has("price")) {
-            return badRequest("Price should be given!");
-        }
-        return null;
-    }
-
-    public ApartmentRequest jsonRequestToApartmentRequest(Http.Request request) {
-        JsonNode requestJson = request.body().asJson();
-        String name = requestJson.findValue("name").asText();
-        String category = requestJson.findValue("category").asText();
-        String description = requestJson.findValue("description").asText();
-        Integer size = requestJson.findValue("size").asInt();
-        Double price = requestJson.findValue("price").asDouble();
-        ApartmentRequest apartmentRequest = new ApartmentRequest(name, category, description, size, price);
-        return apartmentRequest;
-    }
-
-    public Apartment jsonRequestToApartment(Http.Request request) {
-
-        // TODO: In the service layer, we can retreive the apartment by Id, and you update the obj according to json and pass it back to the repository.
-
-        Apartment apartment = new Apartment();
-        JsonNode requestJson = request.body().asJson();
-        apartment.setId(requestJson.findValue("id").asLong());
-        if (requestJson.has("name")) apartment.setName(requestJson.findValue("name").asText());
-        if (requestJson.has("category")) apartment.setCategory(requestJson.findValue("category").asText());
-        if (requestJson.has("description")) apartment.setDescription(requestJson.findValue("description").asText());
-        if (requestJson.has("size")) apartment.setSize(requestJson.findValue("size").asInt());
-        if (requestJson.has("price")) apartment.setPrice(requestJson.findValue("price").asDouble());
-        return apartment;
-    }
-
-    public Result validateApartmentRequest(ApartmentRequest apartmentRequest) {
-        String category = apartmentRequest.getCategory();
-        Integer size = apartmentRequest.getSize();
-        Double price = apartmentRequest.getPrice();
-        if (category == null || !category.equals("A") && !category.equals("B") && !category.equals("C")) {
-            return badRequest("Category should either be \"A\" or \"B\" or \"C\"!");
-        } else if (size == null || size < 10) {
-            return badRequest("Size should not be smaller than 10!");
-        } else if (price == null || price < 5) {
-            return badRequest("Price should not be smaller than 5!");
-        }
-        return null;
-    }
-
-    public Result validateApartmentUpdateRequest(Http.Request request) {
+    public Result validateHttpRequestForAddApartment(Http.Request request) {
         // TODO: pass a different type (bad request)
-        // TODO: return Optional instead of null
-        // TODO: return JSON return object
-        // TODO: Or See the play framework validation doc // annotation on your request.
-        JsonNode requestJson = request.body().asJson();
-        if (!requestJson.has("id")) return badRequest("ID must be given!");
-        if (apartmentService.findApartmentById(requestJson.findValue("id").asLong()) == null) {
-            return notFound("ID doesn't exist.");
-        }
-        if (requestJson.has("category")) {
-            String category = requestJson.findValue("category").asText();
+        JsonNode jsonRequest = request.body().asJson();
+        if (jsonRequest.has("id")) return badRequest(Json.toJson("ID is not required!"));
+        if (!jsonRequest.has("name")) return badRequest(Json.toJson("Name should be given!"));
+        if (!jsonRequest.has("category")) {
+            return badRequest(Json.toJson("Category should be given!"));
+        } else {
+            String category = jsonRequest.get("category").asText();
             if (!category.equals("A") && !category.equals("B") && !category.equals("C")) {
-                return badRequest("Category should either be \"A\" or \"B\" or \"C\"!");
+                return badRequest(Json.toJson("Category should either be \"A\" or \"B\" or \"C\"!"));
             }
         }
-        if (requestJson.has("size")) {
-            Integer size = requestJson.findValue("size").asInt();
-            if (size < 10) return badRequest("Size should not be smaller than 10!");
+        if (!jsonRequest.has("description")) return badRequest(Json.toJson("Description should be given!"));
+        if (!jsonRequest.has("size")) {
+            return badRequest(Json.toJson("Size should be given!"));
+        } else {
+            int size = jsonRequest.findValue("size").asInt();
+            if (size < 10) return badRequest(Json.toJson("Size should not be smaller than 10!"));
         }
-        if (requestJson.has("price")) {
-            Double price = requestJson.findValue("price").asDouble();
-            if (price < 5) return badRequest("Price should not be smaller than 5!");
+        if (!jsonRequest.has("price")) {
+            return badRequest(Json.toJson("Price should be given!"));
+        } else {
+            double price = jsonRequest.findValue("price").asDouble();
+            if (price < 5) return badRequest(Json.toJson("Price should not be smaller than 5!"));
         }
-        return null;
+        return ok();
+    }
+
+    public Result validateHttpRequestForUpdateApartment(Http.Request request) {
+        // TODO: pass a different type (bad request)
+        JsonNode jsonRequest = request.body().asJson();
+        if (!jsonRequest.has("id")) {
+            return badRequest(Json.toJson("ID must be given!"));
+        } else {
+            Long id = jsonRequest.findValue("id").asLong();
+            Optional<Apartment> foundApartment = apartmentService.findApartmentById(id);
+            if (foundApartment.isEmpty() == true) return notFound(Json.toJson("ID doesn't exist!"));
+        }
+        if (jsonRequest.has("category")) {
+            String category = jsonRequest.get("category").asText();
+            if (!category.equals("A") && !category.equals("B") && !category.equals("C")) {
+                return badRequest(Json.toJson("Category should either be \"A\" or \"B\" or \"C\"!"));
+            }
+        }
+        if (jsonRequest.has("size")) {
+            int size = jsonRequest.findValue("size").asInt();
+            if (size < 10) return badRequest(Json.toJson("Size should not be smaller than 10!"));
+        }
+        if (jsonRequest.has("price")) {
+            double price = jsonRequest.findValue("price").asDouble();
+            if (price < 5) return badRequest(Json.toJson("Price should not be smaller than 5!"));
+        }
+        return ok();
+    }
+
+    public Apartment httpRequestToApartment(Http.Request request) {
+        JsonNode jsonRequest = request.body().asJson();
+        Apartment emptyApartment = new Apartment();
+        Apartment apartment = apartmentService.updateApartmentObjWithJson(emptyApartment, jsonRequest);
+        return apartment;
     }
 
     public boolean isOutOfIndex(Integer page, Integer size, Integer length) {
