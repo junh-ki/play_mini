@@ -25,7 +25,7 @@ public class ApartmentRestController extends Controller {
     public Result getApartments(Integer page, Integer size) {
         List<Apartment> apartments = apartmentService.getAllApartments();
         if (isOutOfIndex(page, size, apartments.size())) {
-            return badRequest("Out of index! (Last Index: " + (apartments.size()-1) + ")");
+            return badRequest(Json.toJson("Out of index! (Last Index: " + (apartments.size()-1) + ")"));
         }
         List<Apartment> paginatedApartmentList = getPaginatedApartmentList(page, size, apartments);
         return ok(Json.toJson(paginatedApartmentList));
@@ -33,7 +33,7 @@ public class ApartmentRestController extends Controller {
 
     public Result getApartment(Long id) {
         Optional<Apartment> nullableApartment = apartmentService.findApartmentById(id);
-        if (nullableApartment.isEmpty()) return notFound("ID doesn't exist."); // 404
+        if (nullableApartment.isEmpty()) return notFound(Json.toJson("ID doesn't exist.")); // 404
         return ok(Json.toJson(nullableApartment.get()));
     }
 
@@ -64,16 +64,16 @@ public class ApartmentRestController extends Controller {
         if (jsonRequest.has("id")) return badRequest(Json.toJson("ID is not required!"));
         if (!jsonRequest.has("name")) return badRequest(Json.toJson("Name should be given!"));
         if (!jsonRequest.has("category")) {
-            return badRequest(Json.toJson("Category should be given!"));
+            return badRequest(Json.toJson(Json.toJson("Category should be given!")));
         } else {
             String category = jsonRequest.get("category").asText();
             if (!category.equals("A") && !category.equals("B") && !category.equals("C")) {
-                return badRequest(Json.toJson("Category should either be \"A\" or \"B\" or \"C\"!"));
+                return badRequest(Json.toJson(Json.toJson("Category should either be \"A\" or \"B\" or \"C\"!")));
             }
         }
         if (!jsonRequest.has("description")) return badRequest(Json.toJson("Description should be given!"));
         if (!jsonRequest.has("size")) {
-            return badRequest(Json.toJson("Size should be given!"));
+            return badRequest(Json.toJson(Json.toJson("Size should be given!")));
         } else {
             int size = jsonRequest.findValue("size").asInt();
             if (size < 10) return badRequest(Json.toJson("Size should not be smaller than 10!"));

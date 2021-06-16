@@ -29,9 +29,8 @@ public class ApartmentRepository {
     }
 
     public Apartment addApartment(Apartment apartment) {
-        Long nextId = (Long) server.nextId(Apartment.class);
         server.save(apartment);
-        return server.find(Apartment.class, nextId);
+        return apartment;
     }
 
     public int deleteApartmentById(Long apartmentId) {
