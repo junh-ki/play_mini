@@ -25,6 +25,15 @@ public class ApartmentRepository {
     }
 
     public List<Apartment> getAllApartments() {
+        // TODO: Implement Ebean Query
+        // finder.q
+        // Ebean.createQuery(Apartment.class, "");
+        // 1 2 4 5 7 // Limit,  where category equals C
+        // ascending or descending order.
+        // random order // specify the offset. (apartment from 20 to ~)
+        // select * from apartments where category=‘C’ offset 10 limit 5;
+        // select * from apartments where category=‘C’ order by created_date DESC offset 10 limit 5;
+        // offset will be the current page + and limit will be your page size.
         return finder.all();
     }
 
