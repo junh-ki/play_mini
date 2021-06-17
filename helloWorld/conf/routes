@@ -11,10 +11,15 @@ GET     /apartments                                                           co
 GET     /rest/apartments                                                      controllers.ApartmentRestController.getApartments(page:Integer ?= 1, size:Integer ?= 10)
 GET     /rest/apartments/                                                     controllers.ApartmentRestController.getApartments(page:Integer ?= 1, size:Integer ?= 10)
 GET     /rest/apartments/:id                                                  controllers.ApartmentRestController.getApartment(id:Long)
++nocsrf
 POST    /rest/apartments                                                      controllers.ApartmentRestController.addApartment(request:Request)
++nocsrf
 POST    /rest/apartments/                                                     controllers.ApartmentRestController.addApartment(request:Request)
++nocsrf
 DELETE  /rest/apartments/:id                                                  controllers.ApartmentRestController.deleteApartmentById(id:Long)
++nocsrf
 PUT     /rest/apartments                                                      controllers.ApartmentRestController.updateApartment(request:Request)
++nocsrf
 PUT     /rest/apartments/                                                     controllers.ApartmentRestController.updateApartment(request:Request)
 
 # Map static resources from the /public folder to the /assets URL path

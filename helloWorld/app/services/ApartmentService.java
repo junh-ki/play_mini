@@ -1,19 +1,13 @@
 package services;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import dto.ApartmentRequest;
 import models.Apartment;
-import play.libs.Json;
-import play.mvc.Http;
-import play.mvc.Result;
 import repos.ApartmentRepository;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.util.List;
 import java.util.Optional;
-
-import static play.mvc.Results.*;
 
 @Singleton
 public class ApartmentService {
@@ -30,9 +24,12 @@ public class ApartmentService {
         return Optional.ofNullable(apartment);
     }
 
-    // TODO: SQL query Ebean.
     public List<Apartment> getAllApartments() {
         return apartmentRepository.getAllApartments();
+    }
+
+    public List<Apartment> getApartments(int page, int size) {
+        return apartmentRepository.getApartments(getOffset(page, size), size);
     }
 
     public Apartment addApartment(ApartmentRequest apartmentRequest) {
@@ -51,7 +48,11 @@ public class ApartmentService {
 
     // *** sub methods ***
 
-    public Apartment requestToApartment(ApartmentRequest apartmentRequest) {
+    private int getOffset(int page, int size) {
+        return (page - 1) * size;
+    }
+
+    private Apartment requestToApartment(ApartmentRequest apartmentRequest) {
         Apartment apartment = new Apartment();
         if (apartmentRequest.getId() != null) apartment.setId(apartmentRequest.getId());
         if (apartmentRequest.getName() != null) apartment.setName(apartmentRequest.getName());

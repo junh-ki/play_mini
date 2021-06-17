@@ -3,7 +3,6 @@ package services;
 import dto.ApartmentRequest;
 import dto.ValidationError;
 import models.Apartment;
-import repos.ApartmentRepository;
 
 import javax.inject.Inject;
 import java.util.ArrayList;
@@ -17,6 +16,12 @@ public class ValidationService {
     @Inject
     public ValidationService(ApartmentService apartmentService) {
         this.apartmentService = apartmentService;
+    }
+
+    public List<ValidationError> validateGetRequest(int page) {
+        List<ValidationError> errors = new ArrayList<ValidationError>();
+        if (page < 1) errors.add(new ValidationError("page", "Page cannot be smaller than 1!"));
+        return errors;
     }
 
     public List<ValidationError> validateAddRequest(ApartmentRequest apartmentRequest) {

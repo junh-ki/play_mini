@@ -12,7 +12,6 @@ import services.ApartmentService;
 import services.ValidationService;
 
 import javax.inject.Inject;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -28,12 +27,10 @@ public class ApartmentRestController extends Controller {
     }
 
     public Result getApartments(Integer page, Integer size) {
-        List<Apartment> apartments = apartmentService.getAllApartments();
-        if (isOutOfIndex(page, size, apartments.size())) {
-            return badRequest(Json.toJson("Out of index! (Last Index: " + (apartments.size()-1) + ")"));
-        }
-        List<Apartment> paginatedApartmentList = getPaginatedApartmentList(page, size, apartments);
-        return ok(Json.toJson(paginatedApartmentList));
+        List<ValidationError> validationResult = validationService.validateGetRequest(page);
+        if (validationResult.size() > 0) return badRequest(Json.toJson(validationResult));
+        List<Apartment> apartments = apartmentService.getApartments(page, size);
+        return ok(Json.toJson(apartments));
     }
 
     public Result getApartment(Long id) {
@@ -80,26 +77,6 @@ public class ApartmentRestController extends Controller {
         if (jsonRequest.has("size")) apartmentRequest.setSize(jsonRequest.findValue("size").asInt());
         if (jsonRequest.has("price")) apartmentRequest.setPrice(jsonRequest.findValue("price").asDouble());
         return apartmentRequest;
-    }
-
-    public boolean isOutOfIndex(Integer page, Integer size, Integer length) {
-        int startIndex = 0;
-        if (page > 1) startIndex = startIndex + (page - 1) * size;
-        int lastIndex = startIndex + size;
-        if (lastIndex > length) return true;
-        return false;
-    }
-
-    public List<Apartment> getPaginatedApartmentList(Integer page, Integer size, List<Apartment> apartments) {
-        // TODO: SQL QUERY (Ebean) don't use cache, you can return an empty list. or you can return a bad request (400.. 404 or something)
-        int startIndex = 0;
-        if (page > 1) startIndex = startIndex + (page - 1) * size;
-        List<Apartment> paginatedApartmentList = new ArrayList<Apartment>();
-        for (int i = startIndex; i < startIndex + size; i++) {
-            Apartment app = apartments.get(i);
-            paginatedApartmentList.add(app);
-        }
-        return paginatedApartmentList;
     }
 
 }
